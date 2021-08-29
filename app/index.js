@@ -67,11 +67,11 @@ let currentId = savedMedia.length + 1;
  * id of records should be bigger than "fromId" parameter
  */
 const listSaved = (fromId) => {
-  const minId = fromId || 0;
+  const maxId = fromId || Infinity;
 
   return savedMedia
-    .sort((a, b) => a.id - b.id)
-    .filter(({ id }) => id > minId)
+    .sort((a, b) => b.id - a.id)
+    .filter(({ id }) => id < maxId)
     .slice(0, RECORDS_PER_PAGE);
 };
 
@@ -152,10 +152,7 @@ app.use(async (ctx) => {
       if (ctx.method !== 'GET') {
         break;
       }
-      ctx.response.body = {
-        items: listSaved(ctx.query.fromId),
-        maxId: currentId - 1,
-      };
+      ctx.response.body = { items: listSaved(ctx.query.fromId) };
       return;
     case '/sendText':
       if (ctx.method !== 'POST') {
